@@ -24,10 +24,10 @@
 
                 <!-- Contenido -->
                 <div>
-                    <input type="text" class="form-control" placeholder="Buscar producto" id="buscarProducto">
+                    <input type="text" class="form-control" placeholder="Buscar producto" id="buscarProducto" onkeyup="filtrarProductos()">
                 </div>
                 <table class="table table-striped">
-                    <thead>
+                    <thead id="tablaEncabezado">
                         <tr>
                             <th>SKU</th>
                             <th>Nombre</th>
@@ -65,5 +65,34 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+function filtrarProductos() {
+    var input = document.getElementById("buscarProducto");
+    var filter = input.value.toLowerCase();
+    var table = document.querySelector("table");
+    var rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr"); // Filtrar solo las filas del cuerpo (<tbody>)
+
+    for (var i = 0; i < rows.length; i++) {
+        var cells = rows[i].getElementsByTagName("td");
+        var mostrar = false;
+        for (var j = 0; j < cells.length; j++) {
+            var cell = cells[j];
+            if (cell) {
+                var textValue = cell.textContent || cell.innerText;
+                if (textValue.toLowerCase().indexOf(filter) > -1) {
+                    mostrar = true;
+                    break;
+                }
+            }
+        }
+        if (mostrar) {
+            rows[i].style.display = "";
+        } else {
+            rows[i].style.display = "none";
+        }
+    }
+}
+
+    </script>
 </body>
 </html>
