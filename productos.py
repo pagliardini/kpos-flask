@@ -13,7 +13,7 @@ def mostrar_productos():
     productos = session.query(Producto).all()
     return render_template('productos.html', productos=productos)
 
-@productos_bp.route('/agregar', methods=['GET', 'POST'])
+@productos_bp.route('/productos/agregar', methods=['GET', 'POST'])
 def agregar_producto():
     if request.method == 'POST':
         sku = request.form['sku']
@@ -34,7 +34,7 @@ def agregar_producto():
     proveedores = session.query(Proveedor).all()
     return render_template('agregar_producto.html', rubros=rubros, marcas=marcas, proveedores=proveedores)
 
-@productos_bp.route('/borrar', methods=['POST'])
+@productos_bp.route('/productos/borrar', methods=['POST'])
 def borrar_producto():
     producto_id = request.form['id']
     producto = session.query(Producto).filter_by(id=producto_id).first()
@@ -43,7 +43,7 @@ def borrar_producto():
         session.commit()
     return redirect(url_for('productos.mostrar_productos'))
 
-@productos_bp.route('/modificar/<int:id>', methods=['GET', 'POST'])
+@productos_bp.route('/productos/modificar/<int:id>', methods=['GET', 'POST'])
 def modificar_producto(id):
     producto = session.query(Producto).filter_by(id=id).first()
     if request.method == 'POST':
