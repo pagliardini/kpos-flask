@@ -81,6 +81,15 @@ def borrar_rubro(id):
         session.commit()
     return redirect(url_for('productos.mostrar_rubros'))
 
+@productos_bp.route('/productos/rubros/modificar/<int:id>', methods=['GET', 'POST'])
+def modificar_rubro(id):
+    rubro = session.query(Rubro).filter_by(id=id).first()
+    if request.method == 'POST':
+        rubro.nombre = request.form['nombre']
+        session.commit()
+        return redirect(url_for('productos.mostrar_rubros'))
+    return render_template('modificar_rubro.html', rubro=rubro)
+
 @productos_bp.route('/productos/marcas')
 def mostrar_marcas():
     marcas = session.query(Marca).all()

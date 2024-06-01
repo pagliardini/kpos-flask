@@ -25,7 +25,7 @@
                 <h2>Rubros</h2>
                 <ul class="list-group">
                     {% for rubro in rubros %}
-                    <li class="list-group-item">{{ rubro.nombre }} <a href="/productos/rubros/borrar/{{ rubro.id }}" class="btn btn-danger btn-sm">Borrar</a> <a href="/rubros/{{ rubro.id }}/modificar" class="btn btn-warning btn-sm">Modificar</a></li>
+                    <li class="list-group-item">{{ rubro.nombre }} <a href="/productos/rubros/borrar/{{ rubro.id }}" class="btn btn-danger btn-sm">Borrar</a> <a href="/productos/rubros/modificar/{{ rubro.id }}" class="btn btn-warning btn-sm">Modificar</a></li>
                     {% endfor %}
                 </ul>
             </div>

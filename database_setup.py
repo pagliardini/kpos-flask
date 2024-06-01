@@ -52,9 +52,9 @@ def insertar_datos_ejemplo(modelo, datos_ejemplo):
             session.add(dato)
 
 # Datos de ejemplo
-rubros_ejemplo = [Rubro(nombre='Rubro 1'), Rubro(nombre='Rubro 2'), Rubro(nombre='Rubro 3')]
-marcas_ejemplo = [Marca(nombre='Marca 1'), Marca(nombre='Marca 2'), Marca(nombre='Marca 3')]
-proveedores_ejemplo = [Proveedor(nombre='Proveedor 1'), Proveedor(nombre='Proveedor 2'), Proveedor(nombre='Proveedor 3')]
+rubros_ejemplo = [Rubro(nombre='Cigarrillos'), Rubro(nombre='Golosinas'), Rubro(nombre='Bebidas')]
+marcas_ejemplo = [Marca(nombre='Philip Morris'), Marca(nombre='Coca-Cola'), Marca(nombre='Arcor')]
+proveedores_ejemplo = [Proveedor(nombre='Logistica Zona Sur'), Proveedor(nombre='DLV'), Proveedor(nombre='Vensal Hnos.')]
 productos_ejemplo = [
     Producto(sku='SKU001', nombre='Producto 1', precio_costo=10.00, precio_venta=15.00, idrubro=1, idmarca=1, idproveedor=1),
     Producto(sku='SKU002', nombre='Producto 2', precio_costo=20.00, precio_venta=30.00, idrubro=2, idmarca=2, idproveedor=2),
