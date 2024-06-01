@@ -95,7 +95,61 @@ def mostrar_marcas():
     marcas = session.query(Marca).all()
     return render_template('marcas.html', marcas=marcas)
 
+@productos_bp.route('/productos/marcas/agregar', methods=['POST']) 
+def agregar_marca():
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        nueva_marca = Marca(nombre=nombre)
+        session.add(nueva_marca)
+        session.commit()
+        return redirect(url_for('productos.mostrar_marcas'))
+
+@productos_bp.route('/productos/marcas/borrar/<int:id>', methods=['GET', 'POST'])
+def borrar_marca(id):
+    marca = session.query(Marca).filter_by(id=id).first()
+    if marca:
+        session.delete(marca)
+        session.commit()
+    return redirect(url_for('productos.mostrar_marcas'))
+
+@productos_bp.route('/productos/marcas/modificar/<int:id>', methods=['GET', 'POST'])
+def modificar_marca(id):
+    marca = session.query(Marca).filter_by(id=id).first()
+    if request.method == 'POST':
+        marca.nombre = request.form['nombre']
+        session.commit()
+        return redirect(url_for('productos.mostrar_marcas'))
+    return render_template('modificar_marca.html', marca=marca)
+
+
+
 @productos_bp.route('/productos/proveedores')
 def mostrar_proveedores():
     proveedores = session.query(Proveedor).all()
     return render_template('proveedores.html', proveedores=proveedores)
+
+@productos_bp.route('/productos/proveedores/agregar', methods=['POST'])
+def agregar_proveedor():
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        nuevo_proveedor = Proveedor(nombre=nombre)
+        session.add(nuevo_proveedor)
+        session.commit()
+        return redirect(url_for('productos.mostrar_proveedores'))
+
+@productos_bp.route('/productos/proveedores/borrar/<int:id>', methods=['GET', 'POST'])
+def borrar_proveedor(id):
+    proveedor = session.query(Proveedor).filter_by(id=id).first()
+    if proveedor:
+        session.delete(proveedor)
+        session.commit()
+    return redirect(url_for('productos.mostrar_proveedores'))
+
+@productos_bp.route('/productos/proveedores/modificar/<int:id>', methods=['GET', 'POST'])
+def modificar_proveedor(id):
+    proveedor = session.query(Proveedor).filter_by(id=id).first()
+    if request.method == 'POST':
+        proveedor.nombre = request.form['nombre']
+        session.commit()
+        return redirect(url_for('productos.mostrar_proveedores'))
+    return render_template('modificar_proveedor.html', proveedor=proveedor)

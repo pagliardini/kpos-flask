@@ -10,12 +10,26 @@
 <body>
     <div class="container">
         <h1>Proveedores</h1>
-        <ul>
-            {% for proveedor in proveedores %}
-            <li>{{ proveedor.nombre }} <a href="/proveedores/{{ proveedor.id }}/borrar" class="btn btn-danger btn-sm">Borrar</a> <a href="/proveedores/{{ proveedor.id }}/modificar" class="btn btn-warning btn-sm">Modificar</a></li>
-            {% endfor %}
-        </ul>
-        <a href="/proveedores/agregar" class="btn btn-primary">Agregar Proveedor</a>
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Agregar Proveedor</h2>
+                <form action="/productos/proveedores/agregar" method="POST">
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre:</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Agregar</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <h2>Proveedores</h2>
+                <ul class="list-group">
+                    {% for proveedor in proveedores %}
+                    <li class="list-group-item">{{ proveedor.nombre }} <a href="/productos/proveedores/borrar/{{ proveedor.id }}" class="btn btn-danger btn-sm">Borrar</a> <a href="/productos/proveedores/modificar/{{ proveedor.id }}" class="btn btn-warning btn-sm">Modificar</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
     </div>
 </body>
 </html>

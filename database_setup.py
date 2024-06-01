@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
 # Crear la conexión a la base de datos
-engine = create_engine('sqlite:///productos.db')
+engine = create_engine('sqlite:///kpos.db')
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
 session = Session()

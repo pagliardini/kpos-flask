@@ -10,12 +10,26 @@
 <body>
     <div class="container">
         <h1>Marcas</h1>
-        <ul>
-            {% for marca in marcas %}
-            <li>{{ marca.nombre }} <a href="/marcas/{{ marca.id }}/borrar" class="btn btn-danger btn-sm">Borrar</a> <a href="/marcas/{{ marca.id }}/modificar" class="btn btn-warning btn-sm">Modificar</a></li>
-            {% endfor %}
-        </ul>
-        <a href="/marcas/agregar" class="btn btn-primary">Agregar Marca</a>
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Agregar Marca</h2>
+                <form action="/productos/marcas/agregar" method="POST">
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre:</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Agregar</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <h2>Marcas</h2>
+                <ul class="list-group">
+                    {% for marca in marcas %}
+                    <li class="list-group-item">{{ marca.nombre }} <a href="/productos/marcas/borrar/{{ marca.id }}" class="btn btn-danger btn-sm">Borrar</a> <a href="/productos/marcas/modificar/{{ marca.id }}" class="btn btn-warning btn-sm">Modificar</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
     </div>
 </body>
 </html>
