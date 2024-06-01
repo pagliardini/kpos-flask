@@ -9,7 +9,6 @@ session = Session()
 
 @productos_bp.route('/productos')
 def mostrar_productos():
-    # Obtener todos los productos de la base de datos e incluir las relaciones
     productos = session.query(Producto).all()
     return render_template('productos.html', productos=productos)
 
@@ -28,7 +27,6 @@ def agregar_producto():
         session.commit()
         return redirect(url_for('productos.mostrar_productos'))
     
-    # Obtener rubros, marcas y proveedores para mostrarlos en el formulario
     rubros = session.query(Rubro).all()
     marcas = session.query(Marca).all()
     proveedores = session.query(Proveedor).all()
@@ -57,8 +55,38 @@ def modificar_producto(id):
         session.commit()
         return redirect(url_for('productos.mostrar_productos'))
     
-    # Obtener rubros, marcas y proveedores para mostrarlos en el formulario
     rubros = session.query(Rubro).all()
     marcas = session.query(Marca).all()
     proveedores = session.query(Proveedor).all()
     return render_template('modificar_producto.html', producto=producto, rubros=rubros, marcas=marcas, proveedores=proveedores)
+
+@productos_bp.route('/productos/rubros')
+def mostrar_rubros():
+    rubros = session.query(Rubro).all()
+    return render_template('rubros.html', rubros=rubros)
+
+@productos_bp.route('/productos/rubros/agregar', methods=['POST'])
+def agregar_rubro():
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        nuevo_rubro = Rubro(nombre=nombre)
+        session.add(nuevo_rubro)
+        session.commit()
+        return redirect(url_for('productos.mostrar_rubros'))
+@productos_bp.route('/productos/rubros/borrar/<int:id>', methods=['GET', 'POST'])
+def borrar_rubro(id):
+    rubro = session.query(Rubro).filter_by(id=id).first()
+    if rubro:
+        session.delete(rubro)
+        session.commit()
+    return redirect(url_for('productos.mostrar_rubros'))
+
+@productos_bp.route('/productos/marcas')
+def mostrar_marcas():
+    marcas = session.query(Marca).all()
+    return render_template('marcas.html', marcas=marcas)
+
+@productos_bp.route('/productos/proveedores')
+def mostrar_proveedores():
+    proveedores = session.query(Proveedor).all()
+    return render_template('proveedores.html', proveedores=proveedores)
