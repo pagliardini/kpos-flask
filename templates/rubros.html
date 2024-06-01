@@ -10,19 +10,26 @@
 <body>
     <div class="container">
         <h1>Rubros</h1>
-        <ul>
-            {% for rubro in rubros %}
-            <li>{{ rubro.nombre }} <a href="/productos/rubros/borrar/{{ rubro.id }}" class="btn btn-danger btn-sm">Borrar</a> <a href="/rubros/{{ rubro.id }}/modificar" class="btn btn-warning btn-sm">Modificar</a></li>
-            {% endfor %}
-        </ul>
-        <h2>Agregar Rubro</h2>
-        <form action="/productos/rubros/agregar" method="POST">
-            <div class="mb-3">
-                <label for="nombre" class="form-label">Nombre:</label>
-                <input type="text" class="form-control" id="nombre" name="nombre" required>
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Agregar Rubro</h2>
+                <form action="/productos/rubros/agregar" method="POST">
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre:</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Agregar</button>
+                </form>
             </div>
-            <button type="submit" class="btn btn-primary">Agregar</button>
-        </form>
+            <div class="col-md-6">
+                <h2>Rubros</h2>
+                <ul class="list-group">
+                    {% for rubro in rubros %}
+                    <li class="list-group-item">{{ rubro.nombre }} <a href="/productos/rubros/borrar/{{ rubro.id }}" class="btn btn-danger btn-sm">Borrar</a> <a href="/rubros/{{ rubro.id }}/modificar" class="btn btn-warning btn-sm">Modificar</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
     </div>
 </body>
 </html>
