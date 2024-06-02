@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 from productos import productos_bp
-from compras_blueprint import compras_bp  # Importa el blueprint desde el archivo correcto
+from compras import compras_bp  # Importa el blueprint desde el archivo correcto
 
 app = Flask(__name__)
 
