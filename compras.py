@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-from database_setup import Compra, Proveedor, session
+from database_setup import Compra, Proveedor, Producto, session
 from datetime import datetime
 compras_bp = Blueprint('compras', __name__)
 
@@ -7,7 +7,8 @@ compras_bp = Blueprint('compras', __name__)
 def mostrar_compras():
     compras = session.query(Compra).all()
     proveedores = session.query(Proveedor).all()
-    return render_template('compras.html', compras=compras, proveedores=proveedores)
+    productos = session.query(Producto).all()
+    return render_template('compras.html', compras=compras, proveedores=proveedores, productos=productos)
 
 @compras_bp.route('/compras/agregar', methods=['GET', 'POST'])
 def agregar_compra():
