@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS - Compras</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .invoice-form {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f8f8f8;
+        }
+        .invoice-form h2 {
+            margin-top: 0;
+        }
+        .invoice-table th, .invoice-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .invoice-table th {
+            background-color: #e9ecef;
+        }
+        .total-row {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">Factura de Proveedor</h1>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="invoice-form">
+                    <form method="POST" action="{{ url_for('compras.mostrar_compras') }}">
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="idproveedor" class="form-label">Cod. Prov.</label>
+                                <select class="form-control" id="idproveedor" name="idproveedor" required>
+                                    {% for proveedor in proveedores %}
+                                    <option value="{{ proveedor.id }}">{{ proveedor.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="nombre_proveedor" class="form-label">Nombre Proveedor</label>
+                                <input type="text" class="form-control" id="nombre_proveedor" name="nombre_proveedor" disabled>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="fecha" class="form-label">Fecha Comprobante</label>
+                                <input type="date" class="form-control" id="fecha" name="fecha" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="fecha_contabilizacion" class="form-label">Fecha de Contabilización</label>
+                                <input type="date" class="form-control" id="fecha_contabilizacion" name="fecha_contabilizacion" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="cuit" class="form-label">C.U.I.T</label>
+                                <input type="text" class="form-control" id="cuit" name="cuit" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="comp" class="form-label">COMP</label>
+                                <input type="text" class="form-control" id="comp" name="comp" value="FACTURA" disabled>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="numero_comprobante" class="form-label">N° COMPROBANTE</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="numero_comprobante1" name="numero_comprobante1" required>
+                                    <span class="input-group-text">-</span>
+                                    <input type="text" class="form-control" id="numero_comprobante2" name="numero_comprobante2" required>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="tipo" class="form-label">Tipo</label>
+                                <input type="text" class="form-control" id="tipo" name="tipo" value="A" disabled>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="codigo" class="form-label">CÓDIGO</label>
+                                <input type="text" class="form-control" id="codigo" name="codigo" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="opcion_codigo" class="form-label">Opciones de Código</label>
+                                <div>
+                                    <input type="radio" id="codigo_interno" name="opcion_codigo" value="interno">
+                                    <label for="codigo_interno">Código Interno</label>
+                                    <input type="radio" id="codigo_producto" name="opcion_codigo" value="producto">
+                                    <label for="codigo_producto">Código Producto</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="mercaderia" class="form-label">Mercadería a Depósito</label>
+                                <input type="checkbox" id="mercaderia" name="mercaderia">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="leer_archivo" class="form-label">Leer Archivo</label>
+                                <input type="file" class="form-control" id="leer_archivo" name="leer_archivo">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <table class="table invoice-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Cant</th>
+                                            <th>Cod_Producto</th>
+                                            <th>Descripción</th>
+                                            <th>P. Unit</th>
+                                            <th>P. Total</th>
+                                            <th>Stock Ant.</th>
+                                            <th>Stock Act.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for compra in compras %}
+                                        <tr>
+                                            <td>{{ compra.cantidad }}</td>
+                                            <td>{{ compra.producto.codigo }}</td>
+                                            <td>{{ compra.producto.descripcion }}</td>
+                                            <td>{{ compra.precio_costo }}</td>
+                                            <td>{{ compra.precio_total }}</td>
+                                            <td>{{ compra.stock_ant }}</td>
+                                            <td>{{ compra.stock_act }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="descuento" class="form-label">Descuento</label>
+                                <input type="number" class="form-control" id="descuento" name="descuento" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="iva27" class="form-label">Iva 27%</label>
+                                <input type="number" class="form-control" id="iva27" name="iva27" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="exento" class="form-label">Exento</label>
+                                <input type="number" class="form-control" id="exento" name="exento" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="municipal" class="form-label">Municipal</label>
+                                <input type="number" class="form-control" id="municipal" name="municipal" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="iva105" class="form-label">Iva 10.5%</label>
+                                <input type="number" class="form-control" id="iva105" name="iva105" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="percep" class="form-label">Percep.</label>
+                                <input type="number" class="form-control" id="percep" name="percep" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="perc_munic" class="form-label">Perc. Munic.</label>
+                                <input type="number" class="form-control" id="perc_munic" name="perc_munic" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="iva21" class="form-label">Iva 21%</label>
+                                <input type="number" class="form-control" id="iva21" name="iva21" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="ib" class="form-label">I.B.</label>
+                                <input type="number" class="form-control" id="ib" name="ib" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="otros" class="form-label">Otros</label>
+                                <input type="number" class="form-control" id="otros" name="otros" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="neto" class="form-label">Neto</label>
+                                <input type="number" class="form-control" id="neto" name="neto" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="total" class="form-label">Total</label>
+                                <input type="number" class="form-control" id="total" name="total" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="observacion" class="form-label">Observación</label>
+                                <input type="text" class="form-control" id="observacion" name="observacion">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="estado" class="form-label">Estado</label>
+                                <div>
+                                    <input type="radio" id="factura_pagada" name="estado" value="pagada" required>
+                                    <label for="factura_pagada">Factura Pagada</label>
+                                    <input type="radio" id="cta_cte" name="estado" value="cta_cte" required>
+                                    <label for="cta_cte">A Cta. Cte. sin Pagos</label>
+                                    <input type="radio" id="solo_carga" name="estado" value="solo_carga" required>
+                                    <label for="solo_carga">Solo de Carga</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-success">Aceptar</button>
+                                <button type="reset" class="btn btn-secondary">Volver</button>
+                                <button type="button" class="btn btn-danger">Cancelar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
