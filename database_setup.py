@@ -46,13 +46,15 @@ class Producto(Base):
 
 # Definir el modelo Compra
 class Compra(Base):
-    __tablename__ = 'Compras'
+    __tablename__ = 'Compra'
     id = Column(Integer, primary_key=True, autoincrement=True)
     fecha = Column(Date, nullable=False)
-    fecha_contabilizacion = Column(Date, nullable=False)
-    cuit = Column(String, nullable=False)
-    num_comprobante = Column(Integer, nullable=True)
-    
+    numero_comprobante = Column(String, nullable=False)
+    total = Column(Float, nullable=False)
+    idproveedor = Column(Integer, ForeignKey('Proveedor.id'))
+
+    proveedor = relationship('Proveedor')
+
 # Crear las tablas en la base de datos si no existen
 Base.metadata.create_all(engine)
 
@@ -65,7 +67,7 @@ def insertar_datos_ejemplo(modelo, datos_ejemplo):
 # Datos de ejemplo
 rubros_ejemplo = [Rubro(nombre='Cigarrillos'), Rubro(nombre='Golosinas'), Rubro(nombre='Bebidas')]
 marcas_ejemplo = [Marca(nombre='Philip Morris'), Marca(nombre='Coca-Cola'), Marca(nombre='Arcor')]
-proveedores_ejemplo = [Proveedor(nombre='Logistica Zona Sur'), Proveedor(nombre='DLV'), Proveedor(nombre='Vensal Hnos.')]
+proveedores_ejemplo = [Proveedor(nombre='Logistica Zona Sur', cuit=20359176377), Proveedor(nombre='DLV'), Proveedor(nombre='Vensal Hnos.')]
 productos_ejemplo = [
     Producto(sku='SKU001', nombre='Producto 1', precio_costo=10.00, precio_venta=15.00, stock=5, idrubro=1, idmarca=1, idproveedor=1),
     Producto(sku='SKU002', nombre='Producto 2', precio_costo=20.00, precio_venta=30.00, stock=15, idrubro=2, idmarca=2, idproveedor=2),
