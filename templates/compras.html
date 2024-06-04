@@ -111,24 +111,29 @@
         ];
 
         document.getElementById('buscar_producto').addEventListener('input', function() {
-            const query = this.value.toLowerCase();
-            const listaProductos = document.getElementById('lista_productos');
-            listaProductos.innerHTML = '';
+    const query = this.value.toLowerCase();
+    const listaProductos = document.getElementById('lista_productos');
+    listaProductos.innerHTML = ''; // Limpiar resultados anteriores
 
-            if (query) {
-                productos.filter(producto => producto.nombre.toLowerCase().includes(query)).forEach(producto => {
-                    const item = document.createElement('li');
-                    item.className = 'list-group-item';
-                    item.textContent = `${producto.nombre} (Código: ${producto.sku}, Precio: ${producto.precio}, Stock: ${producto.stock})`;
-                    item.addEventListener('click', function() {
-                        agregarProducto(producto);
-                        listaProductos.innerHTML = '';
-                        document.getElementById('buscar_producto').value = '';
-                    });
-                    listaProductos.appendChild(item);
-                });
-            }
+    if (query) {
+        productos.filter(producto => {
+            return producto.nombre.toLowerCase().includes(query) ||
+                   producto.sku.toLowerCase().includes(query);
+        }).forEach(producto => {
+            const item = document.createElement('li');
+            item.className = 'list-group-item';
+            item.textContent = `${producto.nombre} (Código: ${producto.sku}, Precio: ${producto.precio}, Stock: ${producto.stock})`;
+
+            item.addEventListener('click', () => {
+                agregarProducto(producto);
+                listaProductos.innerHTML = '';
+                this.value = ''; // Limpiar el campo de búsqueda
+            });
+
+            listaProductos.appendChild(item);
         });
+    }
+});
 
         function agregarProducto(producto) {
             const itemCantidad = 1;  // Asumiendo cantidad 1 al agregar el producto
