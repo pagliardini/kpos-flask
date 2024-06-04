@@ -1,30 +1,64 @@
-from sqlalchemy.orm import sessionmaker
-from database_setup import engine, Rubro, Marca, Proveedor, Producto, Compra
+import sqlite3
 
 
-# Insertar datos de ejemplo si no existen
-def insertar_datos_ejemplo(modelo, datos_ejemplo):
-    for dato in datos_ejemplo:
-        if not session.query(modelo).filter_by(nombre=dato.nombre).first():
-            session.add(dato)
 
-# Datos de ejemplo
-rubros_ejemplo = [Rubro(nombre='Cigarrillos'), Rubro(nombre='Golosinas'), Rubro(nombre='Bebidas')]
-marcas_ejemplo = [Marca(nombre='Philip Morris'), Marca(nombre='Coca-Cola'), Marca(nombre='Arcor')]
-proveedores_ejemplo = [Proveedor(nombre='Logistica Zona Sur'), Proveedor(nombre='DLV'), Proveedor(nombre='Vensal Hnos.')]
-productos_ejemplo = [
-    Producto(sku='SKU001', nombre='Producto 1', precio_costo=10.00, precio_venta=15.00, stock=5, idrubro=1, idmarca=1, idproveedor=1),
-    Producto(sku='SKU002', nombre='Producto 2', precio_costo=20.00, precio_venta=30.00, stock=15, idrubro=2, idmarca=2, idproveedor=2),
-    Producto(sku='SKU003', nombre='Producto 3', precio_costo=30.00, precio_venta=45.00, stock=25, idrubro=3, idmarca=3, idproveedor=3)
-]
+datos_productos = [
+    ('77953483', 'CHESTERFIELD 10 BOX', 441.80, 1300.00, 1, 1, 1, 1),
+    ('77948540', 'MARLBORO 10 BOX "FUSION BLAST"', 757.91, 1900.00, 1, 1, 2, 1),
+    ('77934635', 'PHILIPS MORRIS "CAPS" 12 BOX', 746.26, 1530.00, 1, 1, 1, 1),
+    ('77940315', 'MARLBORO 10 TEN BOX', 639.34, 2050.00, 1, 1, 2, 1),
+    ('77987228', 'MARLBORO VISTA EDICION LIMITADA', 2095.50, 2700.00, 1, 1, 2, 1),
+    ('77969828', 'MARLBORO CRAFED BLUE 20 KZ', 755.84, 2150.00, 1, 1, 2, 1),
+    ('77913418', 'PHILIPS MORRIS 10 BOX', 746.26, 1800.00, 1, 1, 1, 1),
+    ('77966742', 'HARMONY COLORADO 20 KZ', 480.85, 2000.00, 1, 1, 3, 1),
+    ('77953957', 'CHESTERFIELD FRESH 20 BOX', 1084.53, 2600.00, 1, 1, 1, 1),
+    ('77918482', 'MARLBORO 20 BOX', 1410.76, 3400.00, 1, 1, 2, 1),
+    ('77953964', 'CHESTERFIELD FRESH 10 BOX', 641.39, 1550.00, 1, 1, 1, 1),
+    ('77966759', 'HARMONY DORADO 20 KZ', 686.15, 2000.00, 1, 1, 3, 1),
+    ('77982476', 'CHESTERFIELD CORAL MOTION 20 BOX', 1084.53, 2600.00, 1, 1, 1, 1),
+    ('77953513', 'CHESTERFIELD 20 KZ', 886.44, 2000.00, 1, 1, 1, 1),
+    ('77912879', 'PHILIPS MORRIS 20 KZ', 1096.18, 2700.00, 1, 1, 1, 1),
+    ('77968395', 'MARLBORO 20 KZ', 964.90, 3100.00, 1, 1, 2, 1),
+    ('77929891', 'PARLIAMENT 20 BOX', 1185.58, 3700.00, 1, 1, 4, 1),
+    ('77940735', 'PHILIPS MORRIS "CAPS" 20 BOX', 1259.29, 3050.00, 1, 1, 1, 1),
+    ('77964373', 'CHESTERFIELD BLUE 20 KZ', 740.44, 2000.00, 1, 1, 1, 1),
+    ('77987297', 'MARLBORO CRAFTED 20 BOX', 837.14, 2550.00, 1, 1, 2, 1),
+    ('77947550', 'MARLBORO 20 BOX "VISTA""PURPLE FUSION"UVA', 976.51, 3100.00, 1, 1, 2, 1),
+    ('77905819', 'MARLBORO GOLD BOX 20', 1410.76, 3400.00, 1, 1, 2, 1),
+    ('77912954', 'PHILIPS MORRIS 20 BOX', 964.90, 3050.00, 1, 1, 1, 1),
+    ('77973887', 'CHESTERFIELD REMIX PURPLE 20 BOX', 1084.53, 2600.00, 1, 1, 1, 1),
+    ('77988225', 'MARLBORO CRAFTED FORWARD 20 BOX', 837.13, 2550.00, 1, 1, 2, 1),
+    ('77968401', 'MARLBORO 20 BOX "VISTA"COREL FUSION" SANDIA', 1270.94, 3100.00, 1, 1, 2, 1),
+    ('77908285', 'VIRGINIA PARLIAMENT SUPER SLIMS BOX', 1185.58, 3750.00, 1, 1, 4, 1),
+    ('77969811', 'MARLBORO CRAFED 20 KZ', 755.84, 2150.00, 1, 1, 2, 1),
+    ('77941015', 'MARLBORO 20 BOX "VISTA""ICE BLAST"MENTOL', 976.51, 3100.00, 1, 1, 2, 1),
+    ('77953476', 'CHESTERFIELD 20 BOX', 837.14, 2600.00, 1, 1, 1, 1),
+    ('77965004', 'HARMONY IMPARCIALES 20KZ', 86.98, 2000.00, 1, 1, 3, 1),
+    ('77960894', 'DOLCHESTER 20 BOX', 487.50, 1500.00, 1, 1, 5, 1),
+    ('77917591', 'HARMONY BAISHA 20KZ', 100.16, 2000.00, 1, 1, 3, 1),
+    ('77966766', 'HARMONY PARTICULARES ''30 20 KZ', 121.18, 2000.00, 1, 1, 3, 1),
+    ('77914898', '40043COMBO CHESTERFIELD CORAL 20 BOX + ENCENDEDOR', 625.00, 3000.00, 1, 1, 1, 1),
+    ('77975010', 'PHILIPS MORRIS "TROPICAL CAPS" 20 BOX', 270.70, 3050.00, 1, 1, 1, 1),
+    ('77979667', 'MARLBORO 20 BOX "VISTA""GARDEN FUSION"MELON', 833.58, 3100.00, 1, 1, 2, 1),
+    ('77983831', 'PHILIPS MORRIS 10 BOX "MIX"', 241.86, 1850.00, 1, 1, 1, 1),
+    ('77940711', 'PHILIPS MORRIS "CAPS" 20 KZ', 138.05, 2700.00, 1, 1, 1, 1),
+    ]
 
-# Insertar datos de ejemplo si no existen
-insertar_datos_ejemplo(Rubro, rubros_ejemplo)
-insertar_datos_ejemplo(Marca, marcas_ejemplo)
-insertar_datos_ejemplo(Proveedor, proveedores_ejemplo)
-insertar_datos_ejemplo(Producto, productos_ejemplo)
+# Conectar a la base de datos
+conexion = sqlite3.connect('kpos.db')
+cursor = conexion.cursor()
 
-# Confirmar los cambios
-session.commit()
+# Consulta SQL para insertar los datos
+consulta_insertar = """
+INSERT INTO Productos (sku, nombre, precio_costo, precio_venta, stock, idrubro, idmarca, idproveedor)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+"""
 
-print("Datos de ejemplo insertados correctamente.")
+
+cursor.executemany(consulta_insertar, datos_productos)
+
+conexion.commit()
+
+conexion.close()
+
+print("Datos insertados correctamente.db")

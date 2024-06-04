@@ -38,25 +38,34 @@
                     </div>
                     <h3>Agregar Ítems</h3>
                     <div class="mb-3">
-                        <label for="idproducto" class="form-label">Producto:</label>
-                        <select class="form-select" id="idproducto">
-                            {% for producto in productos %}
-                                <option value="{{ producto.id }}">{{ producto.nombre }}</option>
-                            {% endfor %}
-                        </select>
+                        <label for="buscar_producto" class="form-label">Buscar Producto:</label>
+                        <input type="text" class="form-control" id="buscar_producto" placeholder="Escribe para buscar y seleccionar un producto...">
+                        <ul class="list-group" id="lista_productos"></ul>
                     </div>
-                    <div class="mb-3">
-                        <label for="item_cantidad" class="form-label">Cantidad:</label>
-                        <input type="number" class="form-control" id="item_cantidad">
-                    </div>
-                    <div class="mb-3">
-                        <label for="item_precio" class="form-label">Precio:</label>
-                        <input type="number" class="form-control" id="item_precio" step="0.01">
-                    </div>
-                    <button type="button" class="btn btn-secondary" id="addItem">Agregar Ítem</button>
                     <h3>Ítems</h3>
-                    <ul class="list-group mb-3" id="itemsList"></ul>
+                    <table class="table table-striped" id="itemsTable">
+                        <thead>
+                            <tr>
+                                <th>Cantidad</th>
+                                <th>Código</th>
+                                <th>Nombre</th>
+                                <th>Precio Unitario</th>
+                                <th>Precio Total</th>
+                                <th>Stock Actual</th>
+                                <th>Stock Futuro</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                     <input type="hidden" name="items" id="itemsInput">
+                    <div class="mb-3">
+                        <label for="subtotal" class="form-label">Subtotal:</label>
+                        <span id="subtotal">0.00</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="totalFactura" class="form-label">Total:</label>
+                        <span id="totalFactura">0.00</span>
+                    </div>
                     <button type="submit" class="btn btn-primary">Agregar Compra</button>
                 </form>
             </div>
@@ -89,38 +98,87 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.getElementById('addItem').addEventListener('click', function() {
-            const idProducto = document.getElementById('idproducto').value;
-            const itemNombre = document.getElementById('idproducto').selectedOptions[0].text;
-            const itemCantidad = document.getElementById('item_cantidad').value;
-            const itemPrecio = document.getElementById('item_precio').value;
-            const itemsList = document.getElementById('itemsList');
-            const itemsInput = document.getElementById('itemsInput');
+        const productos = [
+            {% for producto in productos %}
+                {
+                    id: "{{ producto.id }}",
+                    nombre: "{{ producto.nombre }}",
+                    precio: "{{ producto.precio_costo }}",
+                    sku: "{{ producto.sku }}",
+                    stock: "{{ producto.stock }}"
+                },
+            {% endfor %}
+        ];
 
-            if (idProducto && itemCantidad && itemPrecio) {
-                const listItem = document.createElement('li');
-                listItem.className = 'list-group-item';
-                listItem.textContent = `${itemNombre} - Cantidad: ${itemCantidad} - Precio: ${itemPrecio}`;
-                itemsList.appendChild(listItem);
+        document.getElementById('buscar_producto').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const listaProductos = document.getElementById('lista_productos');
+            listaProductos.innerHTML = '';
 
-                const item = {
-                    idproducto: idProducto,
-                    cantidad: itemCantidad,
-                    precio: itemPrecio
-                };
-
-                const items = JSON.parse(itemsInput.value || '[]');
-                items.push(item);
-                itemsInput.value = JSON.stringify(items);
-
-                // Clear the input fields
-                document.getElementById('idproducto').value = '';
-                document.getElementById('item_cantidad').value = '';
-                document.getElementById('item_precio').value = '';
-            } else {
-                alert('Por favor, completa todos los campos del ítem.');
+            if (query) {
+                productos.filter(producto => producto.nombre.toLowerCase().includes(query)).forEach(producto => {
+                    const item = document.createElement('li');
+                    item.className = 'list-group-item';
+                    item.textContent = `${producto.nombre} (Código: ${producto.sku}, Precio: ${producto.precio}, Stock: ${producto.stock})`;
+                    item.addEventListener('click', function() {
+                        agregarProducto(producto);
+                        listaProductos.innerHTML = '';
+                        document.getElementById('buscar_producto').value = '';
+                    });
+                    listaProductos.appendChild(item);
+                });
             }
         });
+
+        function agregarProducto(producto) {
+            const itemCantidad = 1;  // Asumiendo cantidad 1 al agregar el producto
+            const itemPrecio = producto.precio;
+            const itemsTableBody = document.querySelector('#itemsTable tbody');
+            const itemsInput = document.getElementById('itemsInput');
+
+            const itemPrecioTotal = itemCantidad * itemPrecio;
+            const itemStockFuturo = producto.stock - itemCantidad;
+
+            const row = itemsTableBody.insertRow();
+            row.innerHTML = `
+                <td>${itemCantidad}</td>
+                <td>${producto.sku}</td>
+                <td>${producto.nombre}</td>
+                <td>${itemPrecio}</td>
+                <td>${itemPrecioTotal.toFixed(2)}</td>
+                <td>${producto.stock}</td>
+                <td>${itemStockFuturo}</td>
+            `;
+
+            const item = {
+                idproducto: producto.id,
+                cantidad: itemCantidad,
+                precio: itemPrecio,
+                precioTotal: itemPrecioTotal,
+                sku: producto.sku,
+                stockActual: producto.stock,
+                stockFuturo: itemStockFuturo
+            };
+
+            const items = JSON.parse(itemsInput.value || '[]');
+            items.push(item);
+            itemsInput.value = JSON.stringify(items);
+
+            // Actualizar el subtotal y el total
+            updateTotals();
+        }
+
+        function updateTotals() {
+            const items = JSON.parse(document.getElementById('itemsInput').value || '[]');
+            let subtotal = 0;
+
+            items.forEach(item => {
+                subtotal += item.precioTotal;
+            });
+
+            document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+            document.getElementById('totalFactura').textContent = subtotal.toFixed(2);
+        }
     </script>
 </body>
 </html>
