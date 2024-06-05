@@ -26,7 +26,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="total" class="form-label">Total:</label>
-                        <input type="number" class="form-control" id="total" name="total" step="0.01" required>
+                        <input type="number" class="form-control" id="total" name="total" step="0.01" readonly>
                     </div>
                     <div class="mb-3">
                         <label for="idproveedor" class="form-label">Proveedor:</label>
@@ -111,42 +111,44 @@
         ];
 
         document.getElementById('buscar_producto').addEventListener('input', function() {
-    const query = this.value.toLowerCase();
-    const listaProductos = document.getElementById('lista_productos');
-    listaProductos.innerHTML = ''; // Limpiar resultados anteriores
+            const query = this.value.toLowerCase();
+            const listaProductos = document.getElementById('lista_productos');
+            listaProductos.innerHTML = ''; // Limpiar resultados anteriores
 
-    if (query) {
-        productos.filter(producto => {
-            return producto.nombre.toLowerCase().includes(query) ||
-                   producto.sku.toLowerCase().includes(query);
-        }).forEach(producto => {
-            const item = document.createElement('li');
-            item.className = 'list-group-item';
-            item.textContent = `${producto.nombre} (Código: ${producto.sku}, Precio: ${producto.precio}, Stock: ${producto.stock})`;
+            if (query) {
+                productos.filter(producto => {
+                    return producto.nombre.toLowerCase().includes(query) ||
+                        producto.sku.toLowerCase().includes(query);
+                }).forEach(producto => {
+                    const item = document.createElement('li');
+                    item.className = 'list-group-item';
+                    item.textContent = `${producto.nombre} (Código: ${producto.sku}, Precio: ${producto.precio}, Stock: ${producto.stock})`;
 
-            item.addEventListener('click', () => {
-                agregarProducto(producto);
-                listaProductos.innerHTML = '';
-                this.value = ''; // Limpiar el campo de búsqueda
-            });
+                    item.addEventListener('click', () => {
+                        const cantidad = prompt("Ingrese la cantidad del producto:");
+                        if (cantidad !== null && !isNaN(cantidad) && cantidad > 0) {
+                            agregarProducto(producto, parseInt(cantidad));
+                        }
+                        listaProductos.innerHTML = '';
+                        this.value = ''; // Limpiar el campo de búsqueda
+                    });
 
-            listaProductos.appendChild(item);
+                    listaProductos.appendChild(item);
+                });
+            }
         });
-    }
-});
 
-        function agregarProducto(producto) {
-            const itemCantidad = 1;  // Asumiendo cantidad 1 al agregar el producto
+        function agregarProducto(producto, cantidad) {
             const itemPrecio = producto.precio;
             const itemsTableBody = document.querySelector('#itemsTable tbody');
             const itemsInput = document.getElementById('itemsInput');
 
-            const itemPrecioTotal = itemCantidad * itemPrecio;
-            const itemStockFuturo = producto.stock - itemCantidad;
+            const itemPrecioTotal = cantidad * itemPrecio;
+            const itemStockFuturo = parseInt(producto.stock) + cantidad;
 
             const row = itemsTableBody.insertRow();
             row.innerHTML = `
-                <td>${itemCantidad}</td>
+                <td>${cantidad}</td>
                 <td>${producto.sku}</td>
                 <td>${producto.nombre}</td>
                 <td>${itemPrecio}</td>
@@ -157,7 +159,7 @@
 
             const item = {
                 idproducto: producto.id,
-                cantidad: itemCantidad,
+                cantidad: cantidad,
                 precio: itemPrecio,
                 precioTotal: itemPrecioTotal,
                 sku: producto.sku,
@@ -183,6 +185,7 @@
 
             document.getElementById('subtotal').textContent = subtotal.toFixed(2);
             document.getElementById('totalFactura').textContent = subtotal.toFixed(2);
+            document.getElementById('total').value = subtotal.toFixed(2);
         }
     </script>
 </body>
