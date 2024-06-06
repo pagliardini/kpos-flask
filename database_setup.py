@@ -47,6 +47,7 @@ class Producto(Base):
     detalles = relationship('DetalleCompra', back_populates='producto')
 
 # Definir el modelo Compra
+# Definir el modelo Compra
 class Compra(Base):
     __tablename__ = 'Compra'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -70,6 +71,11 @@ class DetalleCompra(Base):
 
     compra = relationship('Compra', back_populates='detalles')
     producto = relationship('Producto', back_populates='detalles')
+
+    @property
+    def nombre_producto(self):
+        return self.producto.nombre
+
 
 # Crear las tablas en la base de datos si no existen
 Base.metadata.create_all(engine)
