@@ -26,6 +26,7 @@ class Proveedor(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     nombre = Column(String, nullable=False)
     cuit = Column(String, nullable=True)
+    compras = relationship('Compra', back_populates='proveedor')
 
 # Definir el modelo Producto
 class Producto(Base):
@@ -43,6 +44,7 @@ class Producto(Base):
     rubro = relationship('Rubro')
     marca = relationship('Marca')
     proveedor = relationship('Proveedor')
+    detalles = relationship('DetalleCompra', back_populates='producto')
 
 # Definir el modelo Compra
 class Compra(Base):
@@ -53,7 +55,21 @@ class Compra(Base):
     total = Column(Float, nullable=False)
     idproveedor = Column(Integer, ForeignKey('Proveedor.id'))
 
-    proveedor = relationship('Proveedor')
+    proveedor = relationship('Proveedor', back_populates='compras')
+    detalles = relationship('DetalleCompra', back_populates='compra', cascade='all, delete-orphan')
+
+# Definir el modelo DetalleCompra
+class DetalleCompra(Base):
+    __tablename__ = 'detallecompra'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    idcompra = Column(Integer, ForeignKey('Compra.id'))
+    idproducto = Column(Integer, ForeignKey('Productos.id'))
+    cantidad = Column(Integer, nullable=False)
+    costo_unitario = Column(Float, nullable=False)
+    precio_total = Column(Float, nullable=False)
+
+    compra = relationship('Compra', back_populates='detalles')
+    producto = relationship('Producto', back_populates='detalles')
 
 # Crear las tablas en la base de datos si no existen
 Base.metadata.create_all(engine)
@@ -67,7 +83,7 @@ def insertar_datos_ejemplo(modelo, datos_ejemplo):
 # Datos de ejemplo
 rubros_ejemplo = [Rubro(nombre='Cigarrillos'), Rubro(nombre='Golosinas'), Rubro(nombre='Bebidas')]
 marcas_ejemplo = [Marca(nombre='Philip Morris'), Marca(nombre='Coca-Cola'), Marca(nombre='Arcor')]
-proveedores_ejemplo = [Proveedor(nombre='Logistica Zona Sur', cuit=20359176377), Proveedor(nombre='DLV'), Proveedor(nombre='Vensal Hnos.')]
+proveedores_ejemplo = [Proveedor(nombre='Logistica Zona Sur', cuit='20359176377'), Proveedor(nombre='DLV'), Proveedor(nombre='Vensal Hnos.')]
 productos_ejemplo = [
     Producto(sku='SKU001', nombre='Producto 1', precio_costo=10.00, precio_venta=15.00, stock=5, idrubro=1, idmarca=1, idproveedor=1),
     Producto(sku='SKU002', nombre='Producto 2', precio_costo=20.00, precio_venta=30.00, stock=15, idrubro=2, idmarca=2, idproveedor=2),
